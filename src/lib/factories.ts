@@ -44,6 +44,7 @@ import {
   TaskDecoderW,
   TypeOf,
 } from "./types.js";
+import { async } from "./async.js";
 
 /**
  * Creates an alias instance.
@@ -300,29 +301,6 @@ function recordKeyRefinement<K extends string>(_key: Decoder<K>) {
     return e.left(pipe(remainingErrors, ra.reduce(firstError, concat)));
   };
 }
-
-export const async = <A>(decoder: TaskDecoderW<A>): TaskDecoder<A> =>
-  decoder.async
-    ? decoder
-    : { async: true, decode: flow(decoder.decode, t.of), meta: decoder.meta };
-
-export const defer = <A>(decoder: Promise<TaskDecoderW<A>>): TaskDecoder<A> => {
-  return {
-    async: true,
-    decode: (value) => async () => {
-      const result = (await decoder).decode(value);
-      return typeof result === "function" ? result() : result;
-    },
-    meta: {
-      struct: {
-        type: DecoderStructType.Deferred,
-        deferred: decoder.then((decoder) => decoder.meta),
-      },
-      alias: null,
-      doc: null,
-    },
-  };
-};
 
 const _struct = combineS<IdentityTF>(
   (fields) => ({

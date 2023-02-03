@@ -1,7 +1,7 @@
 import { pipe } from "fp-ts/lib/function.js";
 import * as rr from "fp-ts/lib/ReadonlyRecord.js";
-import { async } from "./factories.js";
-import { Decoder, TaskDecoder, TaskDecoderW } from "./types";
+import { async } from "./async.js";
+import { Decoder, TaskDecoder, TaskDecoderW } from "./types.js";
 
 export type ApplyDecoder<
   TF extends TypeFunction,
