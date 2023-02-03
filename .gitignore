@@ -1,0 +1,12 @@
+node_modules
+yarn-error.log
+/lib
+/target
+.private
+.temp
+.env
+.vscode
+__scraps
+.metals
+docker-compose.yml
+tsconfig.tsbuildinfo
