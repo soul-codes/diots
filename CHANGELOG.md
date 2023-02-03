@@ -1,3 +1,10 @@
+## [0.1.3](https://github.com/soul-codes/diots/compare/0.1.2...0.1.3) (2023-02-03)
+
+
+### Bug Fixes
+
+* 🐛 missing async export ([11b7f6c](https://github.com/soul-codes/diots/commit/11b7f6c0e71fcfe0d6ffce428634ff7bdb11dc07))
+
 ## [0.1.2](https://github.com/soul-codes/diots/compare/0.1.1...0.1.2) (2023-02-03)
 
 
