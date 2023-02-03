@@ -1,3 +1,15 @@
+# [0.2.0](https://github.com/soul-codes/diots/compare/0.1.3...0.2.0) (2023-02-03)
+
+
+### Bug Fixes
+
+* 🐛 make kbts a peerDependencies ([2e09588](https://github.com/soul-codes/diots/commit/2e095888174da4f7b834ddeb2376199db074d496))
+
+
+### BREAKING CHANGES
+
+* 🧨 User must install `kbts` separately
+
 ## [0.1.3](https://github.com/soul-codes/diots/compare/0.1.2...0.1.3) (2023-02-03)
 
 
