@@ -6,10 +6,18 @@ import * as t from "fp-ts/lib/Task.js";
 import { block, code, d, kb, KBInstance, list, Node, NodeType } from "kbts";
 import { DocTree } from "../DocTree.js";
 
+export interface DocGenerator {
+  generate(meta: DecoderMeta): Promise<KBInstance | Node>;
+}
+
 export function docgen() {
   const aliasKbs = new Map<AliasInstance, Promise<KBInstance>>();
 
-  const gen = (meta: DecoderMeta): Promise<KBInstance | Node> => {
+  return {
+    generate: gen,
+  };
+
+  function gen(meta: DecoderMeta): Promise<KBInstance | Node> {
     const alias = meta.alias;
     if (alias) {
       let promiseKb = aliasKbs.get(alias);
@@ -21,7 +29,7 @@ export function docgen() {
     }
 
     return createDocNodeFromMeta(meta);
-  };
+  }
 
   function recurse(meta: DecoderMeta): Promise<Node> {
     return gen(meta).then((value) =>
@@ -31,7 +39,7 @@ export function docgen() {
     );
   }
 
-  const createDocNodeFromMeta = async (meta: DecoderMeta): Promise<Node> => {
+  async function createDocNodeFromMeta(meta: DecoderMeta): Promise<Node> {
     const struct = meta.struct;
     switch (struct.type) {
       case DecoderStructType.Atomic: {
@@ -74,8 +82,7 @@ export function docgen() {
           t.map(
             flow(
               rr.mapWithIndex(
-                (key, { field, doc }) =>
-                  d`
+                (key, { field, doc }) => d`
               ${field.required ? "(required)" : "(optional)"}
               ${code(key)}: ${doc}
               `
@@ -119,7 +126,7 @@ export function docgen() {
         return d(await recurse(await struct.deferred), collapseDoc(meta.doc));
       }
     }
-  };
+  }
 }
 
 function collapseDoc(doc: DocTree): Node {
