@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/soul-codes/diots/compare/0.1.1...0.1.2) (2023-02-03)
+
+
+### Bug Fixes
+
+* 🐛 circular dependency between internal modules ([4fd5710](https://github.com/soul-codes/diots/commit/4fd5710f57ced6de8c038af52d75d8eb2d106a01))
+
 ## [0.1.1](https://github.com/soul-codes/diots/compare/0.1.0...0.1.1) (2023-02-03)
 
 
