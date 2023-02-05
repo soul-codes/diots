@@ -1,29 +1,95 @@
-import { AliasInstance, DecoderMeta, DecoderStructType } from "../index.js";
-
 import { flow, pipe } from "fp-ts/lib/function.js";
 import * as rr from "fp-ts/lib/ReadonlyRecord.js";
 import * as t from "fp-ts/lib/Task.js";
 import { block, code, d, kb, KBInstance, list, Node, NodeType } from "kbts";
 import { DocTree } from "../DocTree.js";
+import {
+  any,
+  boolean,
+  ignored,
+  nullish,
+  nullStrict,
+  number,
+  object,
+  string,
+  undefinedish,
+  unknown,
+} from "../factories.js";
+import {
+  AliasInstance,
+  Decoder,
+  DecoderMeta,
+  DecoderStructType,
+  TaskDecoderW,
+} from "../types.js";
 
 export interface DocGenerator {
-  generate(meta: DecoderMeta): Promise<KBInstance | Node>;
+  generate: (
+    meta: DecoderMeta | TaskDecoderW<any>
+  ) => Promise<KBInstance | Node>;
 }
 
-export function docgen() {
-  const aliasKbs = new Map<AliasInstance, Promise<KBInstance>>();
+export interface DocGenOptions {
+  /**
+   * Specifies decoders whose documentation should simply be inlined instead of
+   * referenced as a linked KB when there are many references.
+   *
+   * This works by decoder alias instances: all decoders whose aliases are
+   * included will have their inline predicate figured out from here.
+   * By default, built-in atomic decoders are always inlined.
+   */
+  inlineDecoders: Iterable<readonly [Decoder<any> | AliasInstance, boolean]>;
+}
+
+export function docgen(options?: Partial<DocGenOptions>) {
+  const aliasCache = new Map<AliasInstance, Promise<KBInstance | Node>>();
+  const inlineDecoders = new Map(
+    [
+      ...[
+        string,
+        number,
+        boolean,
+        nullStrict,
+        nullish,
+        undefinedish,
+        unknown,
+        object,
+        any,
+        ignored,
+      ].map((decoder) => [decoder, true] as const),
+      ...(options?.inlineDecoders || []),
+    ]
+      .map(([decoderOrAliases, predicate]) =>
+        "decode" in decoderOrAliases
+          ? decoderOrAliases.meta.alias
+            ? ([decoderOrAliases.meta.alias, predicate] as const)
+            : (null as never)
+          : ([decoderOrAliases, predicate] as const)
+      )
+      .filter(Boolean)
+  );
 
   return {
     generate: gen,
   };
 
-  function gen(meta: DecoderMeta): Promise<KBInstance | Node> {
+  function gen(
+    decoderOrMeta: DecoderMeta | TaskDecoderW<any>
+  ): Promise<KBInstance | Node> {
+    const meta = "decode" in decoderOrMeta ? decoderOrMeta.meta : decoderOrMeta;
     const alias = meta.alias;
     if (alias) {
-      let promiseKb = aliasKbs.get(alias);
+      let promiseKb = aliasCache.get(alias);
       if (!promiseKb) {
-        promiseKb = createDocNodeFromMeta(meta).then(kb(alias.name));
-        aliasKbs.set(alias, promiseKb);
+        promiseKb = createDocNodeFromMeta(meta).then(
+          (node): KBInstance | Node => {
+            const shouldInline = meta.alias
+              ? inlineDecoders.get(meta.alias) ?? false
+              : false;
+            return shouldInline ? node : kb(alias.name)(node);
+          }
+        );
+        aliasCache.set(alias, promiseKb);
       }
       return promiseKb;
     }
@@ -45,7 +111,7 @@ export function docgen() {
     const struct = meta.struct;
     switch (struct.type) {
       case DecoderStructType.Atomic: {
-        return collapseDoc(meta.doc);
+        return d(defaultAtomicDocs(struct.alias), collapseDoc(meta.doc));
       }
 
       case DecoderStructType.Literal: {
@@ -137,4 +203,42 @@ function collapseDoc(doc: DocTree): Node {
     return d(doc.map((doc) => block(null)(collapseDoc(doc))));
   }
   return d(doc.content, collapseDoc(doc.details));
+}
+
+export function defaultAtomicDocs(alias: AliasInstance): Node {
+  switch (alias) {
+    case string.meta.alias: {
+      return "A string value.";
+    }
+    case boolean.meta.alias: {
+      return "A boolean value.";
+    }
+    case number.meta.alias: {
+      return "A numeric value.";
+    }
+    case nullStrict.meta.alias: {
+      return d`The value ${code("null")}.`;
+    }
+    case nullish.meta.alias:
+    case undefinedish.meta.alias: {
+      return "A nullish (null or undefined) value.";
+    }
+
+    case object.meta.alias: {
+      return "An object value.";
+    }
+
+    case any.meta.alias:
+    case unknown.meta.alias: {
+      return "A value of any type.";
+    }
+
+    case ignored.meta.alias: {
+      return "This value does not need to be provided and is ignored.";
+    }
+
+    default: {
+      return null;
+    }
+  }
 }
