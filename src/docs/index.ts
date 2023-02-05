@@ -1,5 +1,5 @@
 import { code, em, kb, link } from "kbts";
-import { defaultFilename, render, save } from "kbts/markdown";
+import { preferredFilename, render, save } from "kbts/markdown";
 import rimraf from "rimraf";
 import { install } from "source-map-support";
 
@@ -13,7 +13,7 @@ rimraf.sync("./docs");
 const kbtsRef = link("https://www.npmjs.com/package/kbts", "kbts");
 const iotsRef = link("https://www.npmjs.com/package/io-ts", "io-ts");
 
-const readme = kb(`${pkg} - document-preserving decoders`)`
+const readme = kb(`${pkg} - documentation-preserving decoders`)`
   ${pkgRef} (for "${em("d")}ocumented ${code("io-ts")}" ) augments
   ${iotsRef} decoders. It provides a parallel set of decoder factory functions
   (such as ${code("string")}, ${code("struct")}, etc), with the main difference
@@ -28,12 +28,11 @@ const readme = kb(`${pkg} - document-preserving decoders`)`
 
   It provides the ${code("docgen")} module, which inspects decoder's structural
   metadata fields and generate kbts documentation.
-
 `;
 
 process.chdir(pwd);
 save(
-  await render([defaultFilename("README.md")(readme)], {
+  await render([preferredFilename("README.md")(readme)], {
     paths: [[readme, "."]],
   })
 );

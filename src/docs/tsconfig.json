@@ -1,5 +1,13 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": { "composite": true },
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "diots": ["../lib/index"],
+      "diots/docgen": ["../lib/docgen/index"]
+    }
+  },
+  "references": [{ "path": "../lib" }],
   "include": ["."]
 }

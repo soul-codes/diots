@@ -32,11 +32,13 @@ export function docgen() {
   }
 
   function recurse(meta: DecoderMeta): Promise<Node> {
-    return gen(meta).then((value) =>
-      typeof value === "object" && value?.type === NodeType.KB
-        ? value.embed((link) => link(), null)
-        : value
-    );
+    return gen(meta).then((value) => {
+      if (typeof value === "object" && value?.type === NodeType.KB) {
+        return value.embed((link) => link(), null);
+      } else {
+        return value;
+      }
+    });
   }
 
   async function createDocNodeFromMeta(meta: DecoderMeta): Promise<Node> {
@@ -55,19 +57,19 @@ export function docgen() {
 
       case DecoderStructType.Array: {
         return d(
-          block(null)`An array. ${list([
-            d`Element: ${await recurse(struct.item)}`,
-          ])}`,
+          block(null)`An array. ${list(
+            d`Element: ${await recurse(struct.item)}`
+          )}`,
           collapseDoc(meta.doc)
         );
       }
 
       case DecoderStructType.Dictionary: {
         return d(
-          block(null)`A dictionary. ${list([
+          block(null)`A dictionary. ${list(
             d`Key: ${await recurse(struct.key)}`,
-            d`Value: ${await recurse(struct.value)}`,
-          ])}`,
+            d`Value: ${await recurse(struct.value)}`
+          )}`,
           collapseDoc(meta.doc)
         );
       }
@@ -90,7 +92,7 @@ export function docgen() {
               (fields) => Object.values(fields),
               (fields) =>
                 d(
-                  block(null)`A key-value structure. ${list(fields)}`,
+                  block(null)`A key-value structure. ${list(...fields)}`,
                   collapseDoc(meta.doc)
                 )
             )
@@ -101,7 +103,7 @@ export function docgen() {
       case DecoderStructType.Union: {
         const members = await Promise.all(struct.members.map(recurse));
         return d(
-          block(null)`One of the following. ${list(members)}`,
+          block(null)`One of the following. ${list(...members)}`,
           collapseDoc(meta.doc)
         );
       }
@@ -109,7 +111,7 @@ export function docgen() {
       case DecoderStructType.Intersection: {
         const members = await Promise.all(struct.members.map(recurse));
         return d(
-          block(null)`All of the following. ${list(members)}`,
+          block(null)`All of the following. ${list(...members)}`,
           collapseDoc(meta.doc)
         );
       }
