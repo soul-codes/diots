@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/soul-codes/diots/compare/0.3.0...0.4.0) (2023-02-05)
+
+
+### Features
+
+* 🎸 inlining options, built-in atomic docs ([71e83ea](https://github.com/soul-codes/diots/commit/71e83ea4ff4bb0026a8941321888214052ebe0a4))
+
 # [0.3.0](https://github.com/soul-codes/diots/compare/0.2.0...0.3.0) (2023-02-05)
 
 
