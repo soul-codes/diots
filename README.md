@@ -1,4 +1,4 @@
-# diots - document-preserving decoders
+# diots - documentation-preserving decoders
 
 `diots` (for "**d**ocumented `io-ts`" ) augments
 [io-ts](https://www.npmjs.com/package/io-ts "io-ts") decoders. It provides a parallel set of decoder factory functions

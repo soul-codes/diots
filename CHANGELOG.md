@@ -1,3 +1,16 @@
+# [0.3.0](https://github.com/soul-codes/diots/compare/0.2.0...0.3.0) (2023-02-05)
+
+
+### Features
+
+* 🎸 upgrade kbts dependency, dos cosmetics ([bdaa8b8](https://github.com/soul-codes/diots/commit/bdaa8b874370bdfc023bb5200cddf9e5a0fe2172))
+
+
+### BREAKING CHANGES
+
+* 🧨 kbts 0.4.1 is has breaking changes from kbts 0.2.x, peerDependencies
+must meet >= 0.4.1
+
 # [0.2.0](https://github.com/soul-codes/diots/compare/0.1.3...0.2.0) (2023-02-03)
 
 

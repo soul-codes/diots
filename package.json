@@ -1,6 +1,6 @@
 {
   "name": "diots",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": {
     "url": "https://github.com/soul-codes/diots"
   },
@@ -75,7 +75,7 @@
       "before:init": [
         "pnpm test -- --passWithNoTests"
       ],
-      "before:git:bump": "pnpm docgen",
+      "before:git:bump": "pnpm docgen && git add -A",
       "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
     }
   },
