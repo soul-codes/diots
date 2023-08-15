@@ -1,8 +1,8 @@
 import type { Decoder as IotsDecoder } from "io-ts/Decoder";
 import { TaskDecoder as IotsTaskDecoder } from "io-ts/TaskDecoder";
 
-import { TypeOf as IotsTypeOfSync } from "io-ts/lib/Decoder";
-import { TypeOf as IotsTypeOfAsync } from "io-ts/lib/TaskDecoder";
+import { TypeOf as IotsTypeOfSync } from "io-ts/Decoder";
+import { TypeOf as IotsTypeOfAsync } from "io-ts/TaskDecoder";
 import { DocTree } from "./DocTree.js";
 
 export enum DecoderStructType {
