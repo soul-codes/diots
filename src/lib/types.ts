@@ -1,8 +1,7 @@
-import type { Decoder as IotsDecoder } from "io-ts/lib/Decoder";
+import type { Decoder as IotsDecoder } from "io-ts/Decoder";
 import { TaskDecoder as IotsTaskDecoder } from "io-ts/TaskDecoder";
-import { Node } from "kbts";
 
-import { TypeOf as IotsTypeOfSync } from "io-ts/lib/Decoder.js";
+import { TypeOf as IotsTypeOfSync } from "io-ts/lib/Decoder";
 import { TypeOf as IotsTypeOfAsync } from "io-ts/lib/TaskDecoder";
 import { DocTree } from "./DocTree.js";
 
