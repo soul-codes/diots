@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/soul-codes/diots/compare/0.4.1...0.4.2) (2023-08-15)
+
+
+### Bug Fixes
+
+* 🐛 typing reimports from io-ts not resolved in ESM context ([ad3a4ee](https://github.com/soul-codes/diots/commit/ad3a4eeb9450ac023888fab1acc2a0f6de0d96f6))
+
 ## [0.4.1](https://github.com/soul-codes/diots/compare/0.4.0...0.4.1) (2023-08-15)
 
 
