@@ -15,6 +15,7 @@ export enum DecoderStructType {
   Intersection,
   Parser,
   Deferred,
+  Lazy,
 }
 
 export interface AliasInstance {
@@ -81,6 +82,11 @@ export interface DecoderStruct_Deferred {
   deferred: Promise<DecoderMeta>;
 }
 
+export interface DecoderStruct_Lazy {
+  type: DecoderStructType.Lazy;
+  target: DecoderMeta;
+}
+
 export type DecoderStruct =
   | DecoderStruct_Literal
   | DecoderStruct_Atomic
@@ -90,7 +96,8 @@ export type DecoderStruct =
   | DecoderStruct_Intersection
   | DecoderStruct_Union
   | DecoderStruct_Parser
-  | DecoderStruct_Deferred;
+  | DecoderStruct_Deferred
+  | DecoderStruct_Lazy;
 
 export interface Decoder<A> extends IotsDecoder<unknown, A> {
   meta: DecoderMeta;

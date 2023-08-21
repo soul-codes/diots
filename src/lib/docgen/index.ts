@@ -1,14 +1,14 @@
-import { flow, pipe } from "fp-ts/lib/function.js";
 import * as rr from "fp-ts/lib/ReadonlyRecord.js";
 import * as t from "fp-ts/lib/Task.js";
-import { block, code, d, kb, KBInstance, list, Node, NodeType } from "kbts";
+import { flow, pipe } from "fp-ts/lib/function.js";
+import { KBInstance, Node, NodeType, block, code, d, kb, list } from "kbts";
 import { DocTree } from "../DocTree.js";
 import {
   any,
   boolean,
   ignored,
-  nullish,
   nullStrict,
+  nullish,
   number,
   object,
   string,
@@ -192,6 +192,10 @@ export function docgen(options?: Partial<DocGenOptions>) {
 
       case DecoderStructType.Deferred: {
         return d(await recurse(await struct.deferred), collapseDoc(meta.doc));
+      }
+
+      case DecoderStructType.Lazy: {
+        return d(await recurse(struct.target), collapseDoc(meta.doc));
       }
     }
   }

@@ -132,15 +132,28 @@ export function lazy<A>(factory: () => TaskDecoderW<A>): TaskDecoderW<A> {
   let decoder: TaskDecoderW<A> | null = null;
   const produce = () => decoder || (decoder = factory());
 
+  let lazyAlias: AliasInstance | null = null;
+  const produceAlias = () =>
+    lazyAlias || (lazyAlias = alias(produce().meta.alias?.name ?? "(lazy)"));
+
   return {
     get async() {
       return produce().async || null;
     },
-    get meta() {
-      return produce().meta;
-    },
     get decode() {
       return produce().decode;
+    },
+    meta: {
+      get alias() {
+        return produceAlias();
+      },
+      doc: null,
+      struct: {
+        type: DecoderStructType.Lazy,
+        get target() {
+          return produce().meta;
+        },
+      },
     },
   } as TaskDecoder<A>;
 }
