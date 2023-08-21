@@ -1,3 +1,10 @@
+# [0.5.0-alpha.0](https://github.com/soul-codes/diots/compare/0.4.2...0.5.0-alpha.0) (2023-08-21)
+
+
+### Features
+
+* 🎸 lazy() factory ([e885d7a](https://github.com/soul-codes/diots/commit/e885d7a05277141b95fefb612c14c7480d55aa4e))
+
 ## [0.4.2](https://github.com/soul-codes/diots/compare/0.4.1...0.4.2) (2023-08-15)
 
 
