@@ -11,18 +11,18 @@ import { Decoder as IotsDecoder } from "io-ts/lib/Decoder.js";
 
 import { key as keyDecodeError, required } from "io-ts/lib/DecodeError.js";
 import {
-  array as iotsSyncArray,
-  boolean as iotsBoolean,
   DecodeError,
   failure,
+  boolean as iotsBoolean,
   intersect as iotsIntersect,
   number as iotsNumber,
+  string as iotsString,
+  array as iotsSyncArray,
   partial as iotsSyncPartial,
   record as iotsSyncRecord,
-  string as iotsString,
   struct as iotsSyncStruct,
-  success,
   union as iotsSyncUnion,
+  success,
 } from "io-ts/lib/Decoder.js";
 import { concat, of as fsgOf } from "io-ts/lib/FreeSemigroup.js";
 import {
@@ -35,6 +35,7 @@ import {
 } from "io-ts/lib/TaskDecoder.js";
 
 import { combineS, comineT, fn1, TypeFunction } from "./apply.js";
+import { async } from "./async.js";
 import {
   AliasInstance,
   Decoder,
@@ -44,7 +45,6 @@ import {
   TaskDecoderW,
   TypeOf,
 } from "./types.js";
-import { async } from "./async.js";
 
 /**
  * Creates an alias instance.
@@ -126,10 +126,8 @@ export const atomic = <A>(
   };
 };
 
-export function lazy<A>(factory: () => TaskDecoder<A>): TaskDecoder<A>;
-export function lazy<A>(factory: () => Decoder<A>): Decoder<A>;
-export function lazy<A>(factory: () => TaskDecoderW<A>): TaskDecoderW<A> {
-  let decoder: TaskDecoderW<A> | null = null;
+export function lazy<A>(factory: () => Decoder<A>): Decoder<A> {
+  let decoder: Decoder<A> | null = null;
   const produce = () => decoder || (decoder = factory());
 
   let lazyAlias: AliasInstance | null = null;
@@ -137,12 +135,7 @@ export function lazy<A>(factory: () => TaskDecoderW<A>): TaskDecoderW<A> {
     lazyAlias || (lazyAlias = alias(produce().meta.alias?.name ?? "(lazy)"));
 
   return {
-    get async() {
-      return produce().async || null;
-    },
-    get decode() {
-      return produce().decode;
-    },
+    decode: (value) => produce().decode(value),
     meta: {
       get alias() {
         return produceAlias();
@@ -155,7 +148,33 @@ export function lazy<A>(factory: () => TaskDecoderW<A>): TaskDecoderW<A> {
         },
       },
     },
-  } as TaskDecoder<A>;
+  };
+}
+
+export function lazyT<A>(factory: () => TaskDecoder<A>): TaskDecoder<A> {
+  let decoder: TaskDecoder<A> | null = null;
+  const produce = () => decoder || (decoder = factory());
+
+  let lazyAlias: AliasInstance | null = null;
+  const produceAlias = () =>
+    lazyAlias || (lazyAlias = alias(produce().meta.alias?.name ?? "(lazy)"));
+
+  return {
+    async: true,
+    decode: (value) => produce().decode(value),
+    meta: {
+      get alias() {
+        return produceAlias();
+      },
+      doc: null,
+      struct: {
+        type: DecoderStructType.Lazy,
+        get target() {
+          return produce().meta;
+        },
+      },
+    },
+  };
 }
 
 export const string: Decoder<string> = atomic(iotsString, alias("string"));
