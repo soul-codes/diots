@@ -126,6 +126,25 @@ export const atomic = <A>(
   };
 };
 
+export function lazy<A>(factory: () => TaskDecoder<A>): TaskDecoder<A>;
+export function lazy<A>(factory: () => Decoder<A>): Decoder<A>;
+export function lazy<A>(factory: () => TaskDecoderW<A>): TaskDecoderW<A> {
+  let decoder: TaskDecoderW<A> | null = null;
+  const produce = () => decoder || (decoder = factory());
+
+  return {
+    get async() {
+      return produce().async || null;
+    },
+    get meta() {
+      return produce().meta;
+    },
+    get decode() {
+      return produce().decode;
+    },
+  } as TaskDecoder<A>;
+}
+
 export const string: Decoder<string> = atomic(iotsString, alias("string"));
 
 export const number: Decoder<number> = atomic(iotsNumber, alias("number"));
